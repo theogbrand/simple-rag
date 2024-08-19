@@ -36,7 +36,7 @@ class LaminiIndex:
         # ebd = Embedding()
         # embeddings = ebd.generate(examples)
         embedding_response = litellm.embedding(
-            model="text-embedding-ada-002",
+            model="text-embedding-3-small",
             input=examples,
         )
         embedding_list = [embedding["embedding"] for embedding in embedding_response.data]
@@ -57,11 +57,11 @@ class QueryEngine:
 
     def answer_question(self, question):
         most_similar = self.index.query(question, k=self.k)
-        # prompt = "\n".join(reversed(most_similar)) + "\n\n" + question
-        # print("------------------------------ Prompt ------------------------------\n" + prompt + "\n----------------------------- End Prompt -----------------------------")
+        prompt = "\n".join(reversed(most_similar)) + "\n\n" + question
+        print("------------------------------ Prompt ------------------------------\n" + prompt + "\n----------------------------- End Prompt -----------------------------")
         # return self.model.generate("<s>[INST]" + prompt + "[/INST]")
         response = completion(
-            model="gpt-4o-mini-2024-07-18", messages=[{"content": question, "role": "user"}]
+            model="gpt-4o-mini-2024-07-18", messages=[{"content": prompt, "role": "user"}]
         )
         return response.choices[0].message.content
 
