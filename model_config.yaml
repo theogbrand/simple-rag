@@ -1,0 +1,13 @@
+model_list:
+  - model_name: claude-3.5 ### RECEIVED MODEL NAME ###
+    litellm_params: # all params accepted by litellm.completion() - https://docs.litellm.ai/docs/completion/input
+      model: claude-3-5-sonnet-20240620 ### MODEL NAME sent to `litellm.completion()` ###
+      api_key: "os.environ/ANTHROPIC_API_KEY" # does os.getenv("AZURE_API_KEY_EU")
+  - model_name: gemini-pro
+    litellm_params:
+      model: gemini/gemini-1.5-pro
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: "*"             # all requests where model not in your config go to this deployment
+    litellm_params:
+      model: openai/*           # set `openai/` to use the openai route
+      api_key: os.environ/OPENAI_API_KEY
