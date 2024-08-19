@@ -2,22 +2,16 @@ import faiss
 import time
 import numpy as np
 from tqdm import tqdm
-import json
-# from lamini.api.embedding import Embedding
-# from lamini import Lamini
-
 import litellm
 from litellm import completion
-import os
 import dotenv
+from directory_helper import DirectoryLoader
 
 dotenv.load_dotenv()
-
-from directory_helper import DirectoryLoader
 litellm.return_response_headers = True
 
 
-class LaminiIndex:
+class DIYIndex:
     def __init__(self, loader):
         self.loader = loader
         self.build_index()
@@ -40,6 +34,7 @@ class LaminiIndex:
             input=examples,
         )
         embedding_list = [embedding["embedding"] for embedding in embedding_response.data]
+        # all text are converted into their Vector form as numpy arrays, NO KNN here
         return np.array(embedding_list)
 
     def query(self, query, k=5):
@@ -53,13 +48,12 @@ class QueryEngine:
     def __init__(self, index, k=5):
         self.index = index
         self.k = k
-        # self.model = Lamini(model_name="mistralai/Mistral-7B-Instruct-v0.1")
 
     def answer_question(self, question):
         most_similar = self.index.query(question, k=self.k)
         prompt = "\n".join(reversed(most_similar)) + "\n\n" + question
         print("------------------------------ Prompt ------------------------------\n" + prompt + "\n----------------------------- End Prompt -----------------------------")
-        # return self.model.generate("<s>[INST]" + prompt + "[/INST]")
+        # return self.model.generate("<s>[INST]" + prompt + "[/INST]") # for Instruct models that require templates
         response = completion(
             model="gpt-4o-mini-2024-07-18", messages=[{"content": prompt, "role": "user"}]
         )
@@ -72,7 +66,7 @@ class RetrievalAugmentedRunner:
         self.loader = DirectoryLoader(dir)
 
     def train(self):
-        self.index = LaminiIndex(self.loader)
+        self.index = DIYIndex(self.loader)
 
     def __call__(self, query):
         query_engine = QueryEngine(self.index, k=self.k)
