@@ -95,7 +95,11 @@ class QueryEngine:
                 + "\n".join(top_k_documents)
                 + "\n----------------------------- End Top K Documents -----------------------------"
             )
-        prompt = "\n".join(top_k_documents) + "\n\n" + "Q: " + question + "\nA:"
+        context = "\n".join(top_k_documents)
+        prompt = f"""Answer the following Question based on the Context only. Only answer from the Context. If you don't know the answer, say 'I cannot answer that question, please try to rephrase your question or ask a different question'.
+            Question: {question}\n\n
+            Context: {context}\n\n
+            Answer:\n"""
         print(
             "------------------------------ Prompt ------------------------------\n"
             + prompt
@@ -104,7 +108,13 @@ class QueryEngine:
 
         response = completion(
             model="gpt-4o-mini-2024-07-18",
-            messages=[{"content": prompt, "role": "user"}],
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {
+                    "role": "user",
+                    "content": prompt,
+                },
+            ],
         )
         return response.choices[0].message.content
 
