@@ -1,7 +1,8 @@
 import os
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 class DefaultChunker:
-    def __init__(self, chunk_size=1024, step_size=256):
+    def __init__(self, chunk_size=512, step_size=256):
         self.chunk_size = chunk_size
         self.step_size = step_size
 
@@ -11,8 +12,20 @@ class DefaultChunker:
                 max_size = min(self.chunk_size, len(text) - i)
                 yield text[i:i+max_size]
 
+class LangChainChunker:
+    def __init__(self, chunk_size=512, chunk_overlap=24):
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
+            length_function=len,
+        )
+
+    def get_chunks(self, data):
+        for text in data:
+            yield from self.text_splitter.split_text(text)
+
 class DirectoryLoader:
-    def __init__(self, directory, batch_size=512, chunker=DefaultChunker()):
+    def __init__(self, directory, batch_size=512, chunker=LangChainChunker()):
         self.directory = directory
         self.chunker = chunker
         self.batch_size = batch_size

@@ -2,3 +2,4 @@ litellm
 google-generativeai
 cohere
 faiss-cpu
+langchain-text-splitters

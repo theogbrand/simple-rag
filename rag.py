@@ -73,7 +73,7 @@ class QueryEngine:
                 "------------------------------ Most Similar ------------------------------"
             )
             for idx, doc in enumerate(most_similar):
-                print(f"{idx}: {doc}")
+                print(f"{idx}: {doc}\n\n")
             print(
                 "----------------------------- End Most Similar -----------------------------"
             )
