@@ -50,9 +50,9 @@ class DIYIndex:
 
 
 class QueryEngine:
-    def __init__(self, index, k=5, rerank_k=2, use_rerank=True):
+    def __init__(self, index, top_k=5, rerank_k=2, use_rerank=True):
         self.index = index
-        self.k = k
+        self.top_k = top_k
         self.rerank_k = rerank_k
         self.use_rerank = use_rerank
         self.cohere_client = cohere.Client() if use_rerank else None
@@ -60,7 +60,7 @@ class QueryEngine:
     def answer_question(self, question):
         if self.use_rerank:
             # Retrieve more documents initially
-            most_similar = self.index.query(question, k=self.k)
+            most_similar = self.index.query(question, k=self.top_k)
             most_similar = most_similar[
                 ::-1
             ]  # index.query uses L2 distance, so most similar is at the end
@@ -80,10 +80,11 @@ class QueryEngine:
                 + "\n----------------------------- End Reranked Results -----------------------------"
             )
             # Select top k reranked documents
-            top_k_documents = reranked_results[: self.k]
+            top_k_documents = reranked_results[: self.top_k]
         else:
             # If not using rerank, just retrieve k documents
-            top_k_documents = self.index.query(question, k=self.k)
+            top_k_documents = self.index.query(question, k=self.top_k)
+            top_k_documents = top_k_documents[::-1] # index.query uses L2 distance, so most similar is the closest distance
             print(
                 "------------------------------ Top K Documents ------------------------------\n"
                 + "\n".join(top_k_documents)
@@ -127,7 +128,7 @@ class QueryEngine:
         # print(reranked_response.results[0].index)
 
         # Extract the reranked indices from the response
-        reranked_indices = [result.index for result in reranked_response.results]
+        reranked_indices = [result.index for result in reranked_response.results] # returns top performing one first
 
         # Reorder the original documents based on the reranked indices
         reranked_documents = [documents[i] for i in reranked_indices]
@@ -136,22 +137,23 @@ class QueryEngine:
 
 
 class RetrievalAugmentedRunner:
-    def __init__(self, dir, k=5, use_rerank=True):
-        self.k = k
+    def __init__(self, dir, top_k=5, rerank_k=2, use_rerank=True):
+        self.top_k = top_k
         self.use_rerank = use_rerank
+        self.rerank_k = rerank_k
         self.loader = DirectoryLoader(dir)
 
     def train(self):
         self.index = DIYIndex(self.loader)
 
     def __call__(self, query):
-        query_engine = QueryEngine(self.index, k=self.k, use_rerank=self.use_rerank)
+        query_engine = QueryEngine(self.index, k=self.top_k, rerank_k=self.rerank_k, use_rerank=self.use_rerank)
         return query_engine.answer_question(query)
 
 
 def main():
     use_rerank = True  # Set this to False to disable reranking
-    model = RetrievalAugmentedRunner(dir="data", use_rerank=use_rerank)
+    model = RetrievalAugmentedRunner(dir="data", top_k=5, rerank_k=2, use_rerank=use_rerank)
     start = time.time()
     model.train()
     print("Time taken to build index: ", time.time() - start)
