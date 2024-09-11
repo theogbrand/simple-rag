@@ -172,7 +172,7 @@ class RetrievalAugmentedRunner:
 def main():
     use_rerank = True  # Set this to False to disable reranking
     model = RetrievalAugmentedRunner(
-        dir="data", top_k=3, rerank_k=3, use_rerank=use_rerank
+        dir="data", top_k=7, rerank_k=7, use_rerank=use_rerank
     )
     start = time.time()
     model.train()

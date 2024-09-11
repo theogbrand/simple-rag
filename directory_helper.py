@@ -18,8 +18,8 @@ class SlidingWindowCharacterChunker:
                 yield text[i : i + max_size]
 
 
-class RecursiveCharacterChunker:
-    def __init__(self, chunk_size=512, chunk_overlap=24):
+class RecursiveCharacterChunker:  # human to semantic split using \n\n, then use this
+    def __init__(self, chunk_size=1024, chunk_overlap=24):
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
@@ -32,9 +32,9 @@ class RecursiveCharacterChunker:
 
 
 class LCSemanticChunker:
-    def __init__(self, chunk_size=512, chunk_overlap=24):
+    def __init__(self, breakpoint_threshold_type="percentile"):
         self.text_splitter = SemanticChunker(
-            OpenAIEmbeddings(), breakpoint_threshold_type="percentile"
+            OpenAIEmbeddings(), breakpoint_threshold_type=breakpoint_threshold_type
         )
 
     def get_chunks(self, data):
@@ -44,7 +44,7 @@ class LCSemanticChunker:
 
 
 class DirectoryLoader:
-    def __init__(self, directory, batch_size=512, chunker=LCSemanticChunker()):
+    def __init__(self, directory, batch_size=512, chunker=RecursiveCharacterChunker()):
         self.directory = directory
         self.chunker = chunker
         self.batch_size = batch_size
