@@ -1,2 +1,4 @@
 litellm
-google
+google-generativeai
+cohere
+faiss-cpu
