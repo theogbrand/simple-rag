@@ -33,9 +33,13 @@ class DirectoryLoader:
     def load(self):
         for root, dirs, files in os.walk(self.directory):
             for file in files:
-                with open(os.path.join(root, file), 'r') as f:
-                    print("Loading file: %s", os.path.join(root, file))
-                    yield f.read()
+                file_path = os.path.join(root, file)
+                with open(file_path, "r") as f:
+                    print(f"Loading file: {file_path}")
+                    content = f.read()
+                    chunks = list(self.chunker.get_chunks([content]))
+                    print(f"Number of chunks for {file_path}: {len(chunks)}")
+                    yield content
 
     def get_chunks(self):
         return self.chunker.get_chunks(self.load())
