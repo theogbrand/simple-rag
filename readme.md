@@ -1,4 +1,4 @@
-TODO:
+# TODO:
 
 - add Exa search
 - add NLI model step to filter out irrelevant context
@@ -17,3 +17,10 @@ TODO:
 
 - PDFtoChat (https://github.com/Nutlope/pdftochat)
 - RAGFlow (https://github.com/infiniflow/ragflow)
+
+# Env Vars required:
+OPENAI_API_KEY, COHERE_API_KEY
+
+# Run Instructions:
+1. create venv, pip install all requirements, activate env
+2. run `python rag.py`
