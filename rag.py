@@ -32,7 +32,7 @@ class DIYIndex:
         # ebd = Embedding()
         # embeddings = ebd.generate(examples)
         embedding_response = litellm.embedding(
-            model="text-embedding-3-small",
+            model="text-embedding-3-large",
             input=examples,
         )
         embedding_list = [
