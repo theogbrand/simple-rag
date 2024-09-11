@@ -51,7 +51,7 @@ class DIYIndex:
 
         # for i, index in enumerate(indices[0]): # double check documents indexed correctly
         #     distance = distances[0][i]
-        #     print(f"Nearest neighbor {i+1}:\n {self.content_chunks[index]}, Distance {distance}\n")
+        #     print(f"Nearest neighbor {i+1}:\n {self.content_chunks[index]}, \nDistance {distance}\n")
         # exit()
         return [self.content_chunks[i] for i in indices[0]]
 
@@ -121,6 +121,12 @@ class QueryEngine:
         if not self.use_rerank:
             return documents
 
+        # check that rerank_k is not greater than top_k, otherwise throw error
+        if self.rerank_k > self.top_k:
+            raise ValueError(
+                f"rerank_k must be less than or equal to top_k, but got rerank_k: {self.rerank_k} and top_k: {self.top_k}"
+            )
+
         reranked_response = self.cohere_client.rerank(
             model="rerank-english-v3.0",
             query=query,
@@ -163,7 +169,7 @@ class RetrievalAugmentedRunner:
 def main():
     use_rerank = True  # Set this to False to disable reranking
     model = RetrievalAugmentedRunner(
-        dir="data", top_k=5, rerank_k=2, use_rerank=use_rerank
+        dir="data", top_k=5, rerank_k=5, use_rerank=use_rerank
     )
     start = time.time()
     model.train()
