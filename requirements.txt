@@ -3,3 +3,4 @@ google-generativeai
 cohere
 faiss-cpu
 langchain-text-splitters
+exa-py
