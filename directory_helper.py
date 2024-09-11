@@ -1,5 +1,8 @@
 import os
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_experimental.text_splitter import SemanticChunker
+from langchain_openai.embeddings import OpenAIEmbeddings
+
 
 class DefaultChunker:
     def __init__(self, chunk_size=512, step_size=256):
@@ -10,9 +13,10 @@ class DefaultChunker:
         for text in data:
             for i in range(0, len(text), self.step_size):
                 max_size = min(self.chunk_size, len(text) - i)
-                yield text[i:i+max_size]
+                yield text[i : i + max_size]
 
-class LangChainChunker:
+
+class RecursiveCharacterChunker:
     def __init__(self, chunk_size=512, chunk_overlap=24):
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
@@ -24,8 +28,21 @@ class LangChainChunker:
         for text in data:
             yield from self.text_splitter.split_text(text)
 
+
+class LCSemanticChunker:
+    def __init__(self, chunk_size=512, chunk_overlap=24):
+        self.text_splitter = SemanticChunker(
+            OpenAIEmbeddings(), breakpoint_threshold_type="percentile"
+        )
+
+    def get_chunks(self, data):
+        for text in data:
+            for doc in self.text_splitter.create_documents([text]):
+                yield doc.page_content
+
+
 class DirectoryLoader:
-    def __init__(self, directory, batch_size=512, chunker=LangChainChunker()):
+    def __init__(self, directory, batch_size=512, chunker=LCSemanticChunker()):
         self.directory = directory
         self.chunker = chunker
         self.batch_size = batch_size

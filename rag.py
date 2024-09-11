@@ -79,10 +79,14 @@ class QueryEngine:
             )
             # Rerank the retrieved documents
             reranked_results = self.rerank_documents(question, most_similar)
-            print("------------------------------ Reranked Results ------------------------------")
+            print(
+                "------------------------------ Reranked Results ------------------------------"
+            )
             for idx, result in enumerate(reranked_results):
                 print(f"{idx}: {result}\n\n")
-            print("----------------------------- End Reranked Results -----------------------------")
+            print(
+                "----------------------------- End Reranked Results -----------------------------"
+            )
             top_k_documents = reranked_results
         else:
             # If not using rerank, just retrieve k documents
@@ -169,7 +173,7 @@ class RetrievalAugmentedRunner:
 def main():
     use_rerank = True  # Set this to False to disable reranking
     model = RetrievalAugmentedRunner(
-        dir="data", top_k=10, rerank_k=5, use_rerank=use_rerank
+        dir="data", top_k=3, rerank_k=3, use_rerank=use_rerank
     )
     start = time.time()
     model.train()
