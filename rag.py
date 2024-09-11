@@ -72,17 +72,17 @@ class QueryEngine:
             print(
                 "------------------------------ Most Similar ------------------------------"
             )
-            print("\n".join(most_similar))
+            for idx, doc in enumerate(most_similar):
+                print(f"{idx}: {doc}")
             print(
                 "----------------------------- End Most Similar -----------------------------"
             )
             # Rerank the retrieved documents
             reranked_results = self.rerank_documents(question, most_similar)
-            print(
-                "------------------------------ Reranked Results ------------------------------\n"
-                + "\n".join(reranked_results)
-                + "\n----------------------------- End Reranked Results -----------------------------"
-            )
+            print("------------------------------ Reranked Results ------------------------------")
+            for idx, result in enumerate(reranked_results):
+                print(f"{idx}: {result}\n\n")
+            print("----------------------------- End Reranked Results -----------------------------")
             top_k_documents = reranked_results
         else:
             # If not using rerank, just retrieve k documents

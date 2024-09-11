@@ -1,7 +1,7 @@
 import os
 
 class DefaultChunker:
-    def __init__(self, chunk_size=512, step_size=256):
+    def __init__(self, chunk_size=1024, step_size=256):
         self.chunk_size = chunk_size
         self.step_size = step_size
 
