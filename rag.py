@@ -7,8 +7,7 @@ from litellm import completion
 import dotenv
 from directory_helper import DirectoryLoader
 import cohere
-from typing import List, Dict, Any
-import json
+from typing import List
 
 dotenv.load_dotenv()
 litellm.return_response_headers = True

@@ -4,8 +4,10 @@ from langchain_experimental.text_splitter import SemanticChunker
 from langchain_openai.embeddings import OpenAIEmbeddings
 
 
-class DefaultChunker:
-    def __init__(self, chunk_size=512, step_size=256):
+class SlidingWindowCharacterChunker:
+    def __init__(
+        self, chunk_size=512, step_size=256
+    ):  # chunk_size is character count, step_size is sliding window step before next chunk is created again; sliding window useful for ensuring info not lost at boundaries of chunks
         self.chunk_size = chunk_size
         self.step_size = step_size
 
